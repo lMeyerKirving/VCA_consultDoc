@@ -6,7 +6,7 @@ import {BehaviorSubject, Observable} from 'rxjs';
   providedIn: 'root', // Ce service sera disponible dans toute l'application
 })
 export class BackendService {
-  public audrosServer = `https://dms-server/`;
+  public audrosServer = ``;
   private _audrosSession: (string | undefined);
   public user = "audros";
   public psw = "aupwd";
@@ -63,6 +63,18 @@ export class BackendService {
         }
       });
     });
+  }
+
+  log(sessionID: string): Observable<any> {
+
+    this._baseUrl = `cocoon/View/ExecuteService/fr/AW_AuplResult3.text?${this.authInfos}${sessionID}&ServiceSubPackage=mehdi&ServiceName=doc_CTRL.au&ServiceParameters=`;
+    console.log("url base est : ", this._baseUrl);
+    const param = "login";
+    const data = "";
+
+    const url = `${this.audrosServer}${this._baseUrl}${param}@${data}@`;
+
+    return this.http.get(url, {responseType: 'text'});
   }
 
   getObjectByRef(data: string): Observable<any> {

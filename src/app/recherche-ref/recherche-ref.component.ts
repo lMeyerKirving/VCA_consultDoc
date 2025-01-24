@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { BackendService } from '../services/backend.service';
 import { FormsModule } from '@angular/forms';
 import { NgForOf, NgIf } from '@angular/common';
+import {ActivatedRoute, Router} from '@angular/router';
 
 @Component({
   selector: 'app-recherche-ref',
@@ -17,11 +18,28 @@ import { NgForOf, NgIf } from '@angular/common';
 export class RechercheRefComponent {
   searchTerm: string = ''; // Contient la référence utilisateur saisie
   result: any = null; // Résultat obtenu après recherche
+  sessionID: string | null = null;
 
-  constructor(private backendService: BackendService) {}
+  constructor(private backendService: BackendService, private route: ActivatedRoute, private router: Router ) {}
 
   ngOnInit(): void {
-    this.initLogin();
+    const currentUrl = window.location.href;
+    const urlObject = new URL(currentUrl);
+
+    // Extraction de l'origine (protocole + nom de domaine)
+    const baseUrl = `${urlObject.origin}/`;
+    this.backendService.audrosServer = baseUrl;
+    this.route.queryParamMap.subscribe((params) => {
+      this.sessionID = params.get('AUSessionID');
+      console.log('SessionID :', this.sessionID);
+
+      if (this.sessionID) {
+        this.backendService.log(this.sessionID).subscribe({
+          next: (response) => console.log('Connexion réussie :', response),
+          error: (err) => console.error('Erreur de connexion :', err),
+        });
+      }
+    });
   }
 
   // Initialisation de l'utilisateur
@@ -49,11 +67,14 @@ export class RechercheRefComponent {
       next: (response) => {
         console.log('Réponse du backend : ', response);
 
-        // Affectation des résultats reçus
+        // Formatage des résultats
         this.result = {
-          ref_utilisat: response.data?.map((item: any) => item.ref_utilisat), // On récupère toutes les ref_utilisat
-          // Les catégories et fichiers sont conservés en commentaire pour réutilisation plus tard
-          // categories: response.categories,
+          ref_utilisat: response.data
+            ?.flatMap((item: any) => item.documents) // Fusionne tous les tableaux de documents
+            .map((doc: any) => ({
+              ref_utilisat: doc.ref_utilisat,
+              designation: doc.designation,
+            })),
         };
 
         console.log('Résultat formaté : ', this.result);
@@ -64,5 +85,6 @@ export class RechercheRefComponent {
       },
     });
   }
+
 }
 
