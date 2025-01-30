@@ -2,15 +2,15 @@ import { Component } from '@angular/core';
 import { BackendService } from '../services/backend.service';
 import { FormsModule } from '@angular/forms';
 import { NgForOf, NgIf } from '@angular/common';
-import {ActivatedRoute, Router} from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-recherche-ref',
-  standalone: true, // Rend le composant standalone
+  standalone: true,
   templateUrl: './recherche-ref.component.html',
   styleUrls: ['./recherche-ref.component.css'],
   imports: [
-    FormsModule, // Nécessaire pour [(ngModel)]
+    FormsModule,
     NgIf,
     NgForOf
   ]
@@ -18,17 +18,20 @@ import {ActivatedRoute, Router} from '@angular/router';
 export class RechercheRefComponent {
   searchTerm: string = ''; // Contient la référence utilisateur saisie
   result: any = null; // Résultat obtenu après recherche
+  noResults: boolean = false; // Indique si aucun résultat n'a été trouvé
   sessionID: string | null = null;
+  baseURL: string | null = null;
+  serv: string | null = null;
 
-  constructor(private backendService: BackendService, private route: ActivatedRoute, private router: Router ) {}
+  constructor(private backendService: BackendService, private route: ActivatedRoute, private router: Router) {}
 
   ngOnInit(): void {
     const currentUrl = window.location.href;
     const urlObject = new URL(currentUrl);
 
-    // Extraction de l'origine (protocole + nom de domaine)
-    const baseUrl = `${urlObject.origin}/`;
-    this.backendService.audrosServer = baseUrl;
+    this.baseURL = `${urlObject.origin}/`;
+    this.serv = `${urlObject.origin}`;
+    this.backendService.audrosServer = this.baseURL;
     this.route.queryParamMap.subscribe((params) => {
       this.sessionID = params.get('AUSessionID');
       console.log('SessionID :', this.sessionID);
@@ -42,40 +45,31 @@ export class RechercheRefComponent {
     });
   }
 
-  // Initialisation de l'utilisateur
-  private initLogin() {
-    this.backendService.autologin().subscribe({
-      next: (data) => {
-        if (data) {
-          console.log('Connexion réussie : ', data);
-        }
-      },
-      error: (error) => {
-        console.error('Erreur lors de l\'autologin :', error);
-      }
-    });
-  }
-
-  // Méthode de recherche appelée lors de la soumission du formulaire
   onSearch(): void {
     if (this.searchTerm.trim() === '') {
       alert('Veuillez entrer une référence valide.');
       return;
     }
 
-    this.backendService.getObjectByRef(this.searchTerm).subscribe({
+    this.backendService.getObjectByRef(this.searchTerm, this.serv).subscribe({
       next: (response) => {
         console.log('Réponse du backend : ', response);
 
-        // Formatage des résultats
-        this.result = {
-          ref_utilisat: response.data
-            ?.flatMap((item: any) => item.documents) // Fusionne tous les tableaux de documents
-            .map((doc: any) => ({
+        const documents = response.data
+          ?.flatMap((item: any) => item.documents) || [];
+        this.noResults = documents.length === 0;
+
+        if (!this.noResults) {
+          this.result = {
+            ref_utilisat: documents.map((doc: any) => ({
               ref_utilisat: doc.ref_utilisat,
               designation: doc.designation,
+              url: doc.url,
             })),
-        };
+          };
+        } else {
+          this.result = null; // Réinitialiser les résultats si aucun document
+        }
 
         console.log('Résultat formaté : ', this.result);
       },
@@ -85,6 +79,4 @@ export class RechercheRefComponent {
       },
     });
   }
-
 }
-

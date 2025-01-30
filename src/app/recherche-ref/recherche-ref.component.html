@@ -2,7 +2,7 @@
   <!-- Bandeau supérieur -->
   <header class="bg-white border-b border-gray-200 py-6 shadow-sm">
     <h1 class="text-3xl font-serif text-gray-700 text-center tracking-widest uppercase">
-      Consultation PLM Production
+      Fiche Point de Contrôle
     </h1>
   </header>
 
@@ -12,14 +12,14 @@
       <!-- Bloc de gauche -->
       <div class="w-full lg:w-[20%] bg-white rounded-lg shadow-md p-8">
         <h2 class="text-lg font-semibold text-gray-700 mb-6 uppercase">
-          Pièce recherchée
+          Produit recherché
         </h2>
 
         <!-- Formulaire de recherche -->
         <form (submit)="onSearch(); $event.preventDefault()" class="space-y-6">
           <div>
             <label for="reference" class="block text-sm font-medium text-gray-600 mb-2">
-              Référence
+              Référence VCA
             </label>
             <input
               id="reference"
@@ -38,17 +38,9 @@
           </button>
         </form>
 
-        <!-- Détails de la pièce -->
-        <div *ngIf="result?.ref_utilisat" class="mt-10 text-center">
-          <h3 class="text-md font-bold text-gray-700">Références associées</h3>
-          <ul class="mt-4 space-y-2">
-            <li
-              *ngFor="let ref of result.ref_utilisat"
-              class="text-sm text-gray-600"
-            >
-              {{ ref }}
-            </li>
-          </ul>
+        <!-- Message pour aucun résultat -->
+        <div *ngIf="noResults" class="mt-4 text-center text-red-500">
+          Aucun résultat trouvé pour cette référence.
         </div>
       </div>
 
@@ -57,44 +49,27 @@
         <h2 class="text-lg font-semibold text-gray-700 mb-6 uppercase" *ngIf="result?.ref_utilisat">
           Résultats de la recherche
         </h2>
-        <div *ngIf="result?.ref_utilisat; else emptyState">
-          <h3 class="text-md font-bold text-gray-700"></h3>
+        <div *ngIf="result?.ref_utilisat; else noResultsState">
           <ul class="mt-4 space-y-2">
             <li
               *ngFor="let ref of result.ref_utilisat"
               class="text-sm text-gray-600"
             >
-              Référence : {{ ref.ref_utilisat }}<br />
-              Désignation : {{ ref.designation }}
+              <a href="{{ref.url}}" target="_blank" class="hover:underline text-[#006F62]">
+                {{ ref.designation }}
+              </a>
             </li>
           </ul>
-          <!-- Placeholders pour les catégories -->
-          <!--
-          <div
-            *ngFor="let category of result.categories"
-            class="mb-6 p-6 rounded-lg bg-[#F8F5F0] border border-gray-200"
-          >
-            <h3 class="text-sm font-bold text-gray-800 mb-3">{{ category.name }}</h3>
-            <ul class="space-y-2">
-              <li
-                *ngFor="let file of category.files"
-                class="flex justify-between items-center text-sm text-gray-600"
-              >
-                <span>{{ file.name }}</span>
-                <a
-                  [href]="file.url"
-                  target="_blank"
-                  class="text-[#006F62] underline hover:text-[#004D4A] transition-all"
-                >
-                  Ouvrir
-                </a>
-              </li>
-            </ul>
-          </div>
-          -->
         </div>
-        <ng-template #emptyState>
-          <p class="text-gray-500 text-center">Aucune donnée disponible. Effectuez une recherche pour voir les résultats.</p>
+        <ng-template #noResultsState>
+          <div class="mt-10 text-center">
+            <p class="text-gray-600 text-lg">
+              Aucun document correspondant n'a été trouvé.
+            </p>
+            <p class="text-gray-500 text-sm">
+              Essayez avec une autre référence ou contactez le support si le problème persiste.
+            </p>
+          </div>
         </ng-template>
       </div>
     </div>
