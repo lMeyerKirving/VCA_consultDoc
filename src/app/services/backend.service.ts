@@ -68,8 +68,8 @@ export class BackendService {
   log(sessionID: string): Observable<any> {
 
 
-    //this._baseUrl = `cocoon/View/ExecuteService/fr/AW_AuplResult3.text?${this.authInfos}${sessionID}&ServiceSubPackage=customer/Apps/DocCtrl&ServiceName=doc_CTRL.au&ServiceParameters=`;
-    this._baseUrl = `cocoon/View/ExecuteService/fr/AW_AuplResult3.text?${this.authInfos}${sessionID}&ServiceSubPackage=mehdi&ServiceName=doc_CTRL.au&ServiceParameters=`;
+    this._baseUrl = `cocoon/View/ExecuteService/fr/AW_AuplResult3.text?${this.authInfos}${sessionID}&ServiceSubPackage=customer/Apps/DocCtrl&ServiceName=doc_CTRL.au&ServiceParameters=`;
+    //this._baseUrl = `cocoon/View/ExecuteService/fr/AW_AuplResult3.text?${this.authInfos}${sessionID}&ServiceSubPackage=mehdi&ServiceName=doc_CTRL.au&ServiceParameters=`;
     console.log("url base est : ", this._baseUrl);
     const param = "login";
     const data = "";
@@ -95,6 +95,13 @@ export class BackendService {
 
   getLevell(): Observable<any> {
     const param = "getLevell";
+    const url = `${this.audrosServer}${this._baseUrl}${param}@`;
+    console.log("URL générée pour getObjectByRef : ", url);
+    return this.http.get<any>(url, { responseType: 'json' });
+  }
+
+  getFonction(): Observable<any> {
+    const param = "getFonction";
     const url = `${this.audrosServer}${this._baseUrl}${param}@`;
     console.log("URL générée pour getObjectByRef : ", url);
     return this.http.get<any>(url, { responseType: 'json' });

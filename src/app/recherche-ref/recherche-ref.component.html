@@ -90,9 +90,7 @@
               class="w-full border border-gray-300 rounded-md p-3 focus:outline-none focus:ring focus:ring-[#ADCB90] text-gray-800"
             >
               <option value="">-- Choisir une fonction --</option>
-              <option value="poincon">Poinçon</option>
-              <option value="sertissage">Sertissage</option>
-              <!-- Ajouter d'autres options ici -->
+              <option *ngFor="let func of functions" [value]="func.role">{{ func.role }}</option>
             </select>
           </div>
           <button
@@ -115,16 +113,25 @@
           Résultats de la recherche
         </h2>
         <div *ngIf="result?.ref_utilisat; else noResultsState">
-          <ul class="mt-4 space-y-2">
-            <li
-              *ngFor="let ref of result.ref_utilisat"
-              class="text-sm text-gray-600"
-            >
-              <a href="{{ref.url}}" target="_blank" class="hover:underline text-[#006F62]">
-                {{ ref.designation }}
-              </a>
-            </li>
-          </ul>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Parcourir les résultats -->
+            <div *ngFor="let ref of result.ref_utilisat" class="bg-white border border-black rounded-lg shadow flex flex-col">
+              <!-- Image -->
+              <div class="h-40 w-full bg-gray-300">
+                <img
+                  [src]="ref.urlPicture || 'placeholder.png'"
+                  alt="{{ ref.designation }}"
+                  class="h-full w-full object-cover">
+              </div>
+              <!-- Lien cliquable dans un encadré -->
+              <div class="flex-grow flex flex-col justify-center bg-white p-4">
+                <a href="{{ ref.url }}" target="_blank"
+                   class="block text-gray-800 text-center py-2 px-4 bg-white border border-gray-300 rounded-lg shadow-sm hover:bg-gray-100">
+                  {{ ref.designation }}
+                </a>
+              </div>
+            </div>
+          </div>
         </div>
         <ng-template #noResultsState>
           <div class="mt-10 text-center">
@@ -137,6 +144,9 @@
           </div>
         </ng-template>
       </div>
+
+
+
     </div>
   </main>
 </div>
