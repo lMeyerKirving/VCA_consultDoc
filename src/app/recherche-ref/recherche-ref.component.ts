@@ -23,7 +23,16 @@ export class RechercheRefComponent {
   baseURL: string | null = null;
   serv: string | null = null;
 
+  selectedFunction: string = '';
+
   constructor(private backendService: BackendService, private route: ActivatedRoute, private router: Router) {}
+
+  levels: any[] = []; // Liste des Levels
+  users: any[] = []; // Liste des Users
+  filteredUsers: any[] = []; // Liste des Users filtrés selon le Level sélectionné
+
+  selectedLevel: string = ''; // Niveau sélectionné
+  selectedUser: string = ''; // Utilisateur sélectionné
 
   ngOnInit(): void {
     const currentUrl = window.location.href;
@@ -43,17 +52,25 @@ export class RechercheRefComponent {
         });
       }
     });
+
+    this.loadLevels();
+    this.loadUsers();
   }
 
   onSearch(): void {
-    if (this.searchTerm.trim() === '') {
-      alert('Veuillez entrer une référence valide.');
-      return;
-    }
+    // Construire la chaîne avec les champs et leurs préfixes
+    const searchParameters = [
+      `VCA:${this.searchTerm || ''}`,    // Référence VCA
+      `PIL:${this.selectedLevel || ''}`, // Pilier
+      `COL:${this.selectedUser || ''}`,  // Collection
+      `FCT:${this.selectedFunction || ''}` // Fonction
+    ].join(';'); // Concaténer avec ';' comme séparateur
 
-    this.backendService.getObjectByRef(this.searchTerm, this.serv).subscribe({
+    console.log('Paramètres de recherche :', searchParameters);
+
+    this.backendService.getObjectByRef(searchParameters, this.serv).subscribe({
       next: (response) => {
-        console.log('Réponse du backend : ', response);
+        console.log('Réponse du backend :', response);
 
         const documents = response.data
           ?.flatMap((item: any) => item.documents) || [];
@@ -71,12 +88,56 @@ export class RechercheRefComponent {
           this.result = null; // Réinitialiser les résultats si aucun document
         }
 
-        console.log('Résultat formaté : ', this.result);
+        console.log('Résultat formaté :', this.result);
       },
       error: (err) => {
         console.error('Erreur lors de la recherche :', err);
         alert('Une erreur est survenue lors de la recherche.');
       },
     });
+    this.searchTerm = '';
+    this.selectedLevel = '';
+    this.selectedUser = '';
+    this.selectedFunction = '';
   }
+
+  loadLevels(): void {
+    this.backendService.getLevell().subscribe({
+      next: (response) => {
+        console.log('Levels reçus : ', response);
+        this.levels = response.data?.map((level: { ref_utilisat: string; }) => ({
+          ...level,
+          ref_utilisat: level.ref_utilisat.toLowerCase() // Normalisation en minuscules
+        })) || [];
+      },
+      error: (err) => console.error('Erreur lors du chargement des Levels :', err)
+    });
+  }
+
+  loadUsers(): void {
+    this.backendService.getUsers().subscribe({
+      next: (response) => {
+        console.log('Users reçus : ', response);
+        this.users = response.data?.map((user: { niveau: string; }) => ({
+          ...user,
+          niveau: user.niveau.toLowerCase() // Normalisation en minuscules
+        })) || [];
+      },
+      error: (err) => console.error('Erreur lors du chargement des Users :', err)
+    });
+  }
+
+
+  onLevelChange(): void {
+    console.log('Niveau sélectionné : ', this.selectedLevel);
+
+    if (this.selectedLevel) {
+      this.filteredUsers = this.users.filter(user =>
+        user.niveau.toLowerCase() === this.selectedLevel.toLowerCase()
+      );
+    } else {
+      this.filteredUsers = [];
+    }
+  }
+
 }

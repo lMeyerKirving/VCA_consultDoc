@@ -1,10 +1,22 @@
 <div class="bg-[#F8F5F0] min-h-screen flex flex-col">
   <!-- Bandeau supérieur -->
-  <header class="bg-white border-b border-gray-200 py-6 shadow-sm">
-    <h1 class="text-3xl font-serif text-gray-700 text-center tracking-widest uppercase">
+
+  <header class="bg-white border-b border-gray-200 py-6 shadow-sm flex items-center justify-between px-8">
+
+    <!-- Logo à gauche -->
+    <div class="flex items-center">
+      <img src="3-logo-vca-green.png" alt="Logo Van Cleef & Arpels" class="h-16">
+    </div>
+
+    <!-- Titre centré -->
+    <h1 class="text-3xl font-serif text-gray-700 text-center flex-grow tracking-widest uppercase">
       Fiche Point de Contrôle
     </h1>
+
+    <!-- Espace vide pour équilibrer -->
+    <div class="w-16"></div>
   </header>
+
 
   <!-- Contenu principal -->
   <main class="flex-1 px-8 py-10">
@@ -30,9 +42,62 @@
               class="w-full border border-gray-300 rounded-md p-3 focus:outline-none focus:ring focus:ring-[#d1bfa7] text-gray-800"
             />
           </div>
+          <!-- Champ Pilier -->
+          <div>
+            <label for="pilier" class="block text-sm font-medium text-gray-600 mb-2">
+              Pilier
+            </label>
+            <select
+              id="pilier"
+              name="pilier"
+              [(ngModel)]="selectedLevel"
+              (change)="onLevelChange()"
+              class="w-full border border-gray-300 rounded-md p-3 focus:ring-[#ADCB90] text-gray-800"
+            >
+              <option value="">-- Choisir un pilier --</option>
+              <option *ngFor="let level of levels" [value]="level.ref_utilisat">{{ level.ref_utilisat }}</option>
+            </select>
+          </div>
+
+          <!-- Sélection de la Collection (User) -->
+          <div>
+            <label for="collection" class="block text-sm font-medium text-gray-600 mb-2">
+              Collection
+            </label>
+            <select
+              id="collection"
+              name="collection"
+              [(ngModel)]="selectedUser"
+              class="w-full border border-gray-300 rounded-md p-3 focus:ring-[#ADCB90] text-gray-800"
+              [disabled]="!selectedLevel"
+            >
+              <!-- Afficher ou masquer le placeholder selon la sélection du Pilier -->
+              <option *ngIf="selectedLevel" value="">-- Choisir une collection --</option>
+              <option *ngFor="let user of filteredUsers" [value]="user.ref_utilisat">{{ user.ref_utilisat }}</option>
+            </select>
+          </div>
+
+
+          <!-- Champ Fonction -->
+          <div>
+            <label for="fonction" class="block text-sm font-medium text-gray-600 mb-2">
+              Fonction
+            </label>
+            <select
+              id="fonction"
+              name="fonction"
+              [(ngModel)]="selectedFunction"
+              class="w-full border border-gray-300 rounded-md p-3 focus:outline-none focus:ring focus:ring-[#ADCB90] text-gray-800"
+            >
+              <option value="">-- Choisir une fonction --</option>
+              <option value="poincon">Poinçon</option>
+              <option value="sertissage">Sertissage</option>
+              <!-- Ajouter d'autres options ici -->
+            </select>
+          </div>
           <button
             type="submit"
-            class="w-full bg-[#d1bfa7] text-white py-3 rounded-lg hover:bg-[#b5a18c] transition-all text-lg font-semibold"
+            class="w-full bg-[#ADCB90] text-white py-3 rounded-lg hover:bg-[#ADCB90] transition-all text-lg font-semibold"
           >
             Rechercher
           </button>

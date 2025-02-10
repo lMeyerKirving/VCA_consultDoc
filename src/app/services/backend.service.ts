@@ -68,8 +68,8 @@ export class BackendService {
   log(sessionID: string): Observable<any> {
 
 
-    this._baseUrl = `cocoon/View/ExecuteService/fr/AW_AuplResult3.text?${this.authInfos}${sessionID}&ServiceSubPackage=customer/Apps/DocCtrl&ServiceName=doc_CTRL.au&ServiceParameters=`;
-    //this._baseUrl = `cocoon/View/ExecuteService/fr/AW_AuplResult3.text?${this.authInfos}${sessionID}&ServiceSubPackage=mehdi&ServiceName=doc_CTRL.au&ServiceParameters=`;
+    //this._baseUrl = `cocoon/View/ExecuteService/fr/AW_AuplResult3.text?${this.authInfos}${sessionID}&ServiceSubPackage=customer/Apps/DocCtrl&ServiceName=doc_CTRL.au&ServiceParameters=`;
+    this._baseUrl = `cocoon/View/ExecuteService/fr/AW_AuplResult3.text?${this.authInfos}${sessionID}&ServiceSubPackage=mehdi&ServiceName=doc_CTRL.au&ServiceParameters=`;
     console.log("url base est : ", this._baseUrl);
     const param = "login";
     const data = "";
@@ -82,6 +82,20 @@ export class BackendService {
   getObjectByRef(data: string, serv: string | null): Observable<any> {
     const param = "getDocument"; // Appel du backend pour la procédure "getDocument"
     const url = `${this.audrosServer}${this._baseUrl}${param}@${data};${serv}@`;
+    console.log("URL générée pour getObjectByRef : ", url);
+    return this.http.get<any>(url, { responseType: 'json' });
+  }
+
+  getUsers(): Observable<any> {
+    const param = "getUsers";
+    const url = `${this.audrosServer}${this._baseUrl}${param}@`;
+    console.log("URL générée pour getObjectByRef : ", url);
+    return this.http.get<any>(url, { responseType: 'json' });
+  }
+
+  getLevell(): Observable<any> {
+    const param = "getLevell";
+    const url = `${this.audrosServer}${this._baseUrl}${param}@`;
     console.log("URL générée pour getObjectByRef : ", url);
     return this.http.get<any>(url, { responseType: 'json' });
   }
