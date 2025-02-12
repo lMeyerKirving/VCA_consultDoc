@@ -87,14 +87,14 @@ export class BackendService {
   }
 
   getUsers(): Observable<any> {
-    const param = "getUsers";
+    const param = "getCollection";
     const url = `${this.audrosServer}${this._baseUrl}${param}@`;
     console.log("URL générée pour getObjectByRef : ", url);
     return this.http.get<any>(url, { responseType: 'json' });
   }
 
   getLevell(): Observable<any> {
-    const param = "getLevell";
+    const param = "getPilier";
     const url = `${this.audrosServer}${this._baseUrl}${param}@`;
     console.log("URL générée pour getObjectByRef : ", url);
     return this.http.get<any>(url, { responseType: 'json' });
@@ -102,6 +102,13 @@ export class BackendService {
 
   getFonction(): Observable<any> {
     const param = "getFonction";
+    const url = `${this.audrosServer}${this._baseUrl}${param}@`;
+    console.log("URL générée pour getObjectByRef : ", url);
+    return this.http.get<any>(url, { responseType: 'json' });
+  }
+
+  getSegment(): Observable<any> {
+    const param = "getSegment";
     const url = `${this.audrosServer}${this._baseUrl}${param}@`;
     console.log("URL générée pour getObjectByRef : ", url);
     return this.http.get<any>(url, { responseType: 'json' });

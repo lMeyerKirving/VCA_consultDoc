@@ -1,110 +1,118 @@
-import { Component } from '@angular/core';
-import { BackendService } from '../services/backend.service';
-import { FormsModule } from '@angular/forms';
-import { NgForOf, NgIf } from '@angular/common';
-import { ActivatedRoute, Router } from '@angular/router';
+  import { Component } from '@angular/core';
+  import { BackendService } from '../services/backend.service';
+  import { FormsModule } from '@angular/forms';
+  import {NgClass, NgForOf, NgIf} from '@angular/common';
+  import { ActivatedRoute, Router } from '@angular/router';
 
-@Component({
-  selector: 'app-recherche-ref',
-  standalone: true,
-  templateUrl: './recherche-ref.component.html',
-  styleUrls: ['./recherche-ref.component.css'],
-  imports: [
-    FormsModule,
-    NgIf,
-    NgForOf
-  ]
-})
-export class RechercheRefComponent {
-  searchTerm: string = ''; // Contient la référence utilisateur saisie
-  result: any = null; // Résultat obtenu après recherche
-  noResults: boolean = false; // Indique si aucun résultat n'a été trouvé
-  sessionID: string | null = null;
-  baseURL: string | null = null;
-  serv: string | null = null;
+  @Component({
+    selector: 'app-recherche-ref',
+    standalone: true,
+    templateUrl: './recherche-ref.component.html',
+    styleUrls: ['./recherche-ref.component.css'],
+    imports: [
+      FormsModule,
+      NgIf,
+      NgForOf,
+      NgClass
+    ]
+  })
+  export class RechercheRefComponent {
+    searchTerm: string = ''; // Contient la référence utilisateur saisie
+    result: any = null; // Résultat obtenu après recherche
+    noResults: boolean = false; // Indique si aucun résultat n'a été trouvé
+    sessionID: string | null = null;
+    baseURL: string | null = null;
+    serv: string | null = null;
 
-  selectedFunction: string = '';
+    selectedFunction: string = '';
 
-  constructor(private backendService: BackendService, private route: ActivatedRoute, private router: Router) {}
+    constructor(private backendService: BackendService, private route: ActivatedRoute, private router: Router) {}
 
-  levels: any[] = []; // Liste des Levels
-  users: any[] = []; // Liste des Users
-  filteredUsers: any[] = []; // Liste des Users filtrés selon le Level sélectionné
-  functions: any[] = [];
+    levels: any[] = []; // Liste des Levels
+    users: any[] = []; // Liste des Users
+    filteredLevels: any[] = []; // Liste des Levels filtrés selon le Segment sélectionné
+    filteredUsers: any[] = []; // Liste des Users filtrés selon le Level sélectionné
+    functions: any[] = [];
+    segments: any[] = []; // Liste des Segments
 
-  selectedLevel: string = ''; // Niveau sélectionné
-  selectedUser: string = ''; // Utilisateur sélectionné
+    selectedLevel: string = ''; // Niveau sélectionné
+    selectedUser: string = ''; // Utilisateur sélectionné
+    selectedSegment: string = '';
 
-  ngOnInit(): void {
-    const currentUrl = window.location.href;
-    const urlObject = new URL(currentUrl);
+    ngOnInit(): void {
+      const currentUrl = window.location.href;
+      const urlObject = new URL(currentUrl);
 
-    this.baseURL = `${urlObject.origin}/`;
-    this.serv = `${urlObject.origin}`;
-    this.backendService.audrosServer = this.baseURL;
-    this.route.queryParamMap.subscribe((params) => {
-      this.sessionID = params.get('AUSessionID');
-      console.log('SessionID :', this.sessionID);
+      this.baseURL = `${urlObject.origin}/`;
+      this.serv = `${urlObject.origin}`;
+      this.backendService.audrosServer = this.baseURL;
+      this.route.queryParamMap.subscribe((params) => {
+        this.sessionID = params.get('AUSessionID');
+        console.log('SessionID :', this.sessionID);
 
-      if (this.sessionID) {
-        this.backendService.log(this.sessionID).subscribe({
-          next: (response) => console.log('Connexion réussie :', response),
-          error: (err) => console.error('Erreur de connexion :', err),
-        });
-      }
-    });
-
-    this.loadLevels();
-    this.loadUsers();
-    this.loadFunctions();
-  }
-
-  onSearch(): void {
-    // Récupérer les num_art pour chaque champ sélectionné ou définir "0" par défaut
-    const selectedLevelNumArt = this.levels.find(level => level.ref_utilisat === this.selectedLevel)?.num_art || '0';
-    const selectedUserNumArt = this.users.find(user => user.ref_utilisat === this.selectedUser)?.num_art || '0';
-    const selectedFunctionNumArt = this.functions.find(func => func.role === this.selectedFunction)?.num_art || '0';
-
-    // Construire la chaîne avec les champs et leurs num_art ou "0"
-    const searchParameters = [
-      `VCA:${this.searchTerm || ''}`,    // Référence VCA
-      `PIL:${selectedLevelNumArt}`,      // Pilier (num_art ou "0")
-      `COL:${selectedUserNumArt}`,       // Collection (num_art ou "0")
-      `FCT:${selectedFunctionNumArt}`    // Fonction (num_art ou "0")
-    ].join(';'); // Concaténer avec ';' comme séparateur
-
-    console.log('Paramètres de recherche :', searchParameters);
-
-    // Appel au backend
-    this.backendService.getObjectByRef(searchParameters, this.serv).subscribe({
-      next: (response) => {
-        console.log('Réponse du backend :', response);
-
-        const documents = response.data
-          ?.flatMap((item: any) => item.documents) || [];
-        this.noResults = documents.length === 0;
-
-        if (!this.noResults) {
-          this.result = {
-            ref_utilisat: documents.map((doc: any) => ({
-              ref_utilisat: doc.ref_utilisat,
-              designation: doc.designation,
-              urlPicture: doc.urlPicture,
-              url: doc.url,
-            })),
-          };
-        } else {
-          this.result = null; // Réinitialiser les résultats si aucun document
+        if (this.sessionID) {
+          this.backendService.log(this.sessionID).subscribe({
+            next: (response) => console.log('Connexion réussie :', response),
+            error: (err) => console.error('Erreur de connexion :', err),
+          });
         }
+      });
 
-        console.log('Résultat formaté :', this.result);
-      },
-      error: (err) => {
-        console.error('Erreur lors de la recherche :', err);
-        //alert('Une erreur est survenue lors de la recherche.');
-      },
-    });
-  }
+      this.loadLevels();
+      this.loadUsers();
+      this.loadFunctions();
+      this.loadSegments();
+    }
+
+    onSearch(): void {
+      // Récupérer les num_art pour chaque champ sélectionné ou définir "0" par défaut
+      const selectedLevelNumArt = this.levels.find(level => level.ref_utilisat === this.selectedLevel)?.num_art || '0';
+      const selectedUserNumArt = this.users.find(user => user.ref_utilisat === this.selectedUser)?.num_art || '0';
+      const selectedFunctionNumArt = this.functions.find(func => func.role === this.selectedFunction)?.num_art || '0';
+      const selectedSegmentNumArt = this.segments.find(segment => segment.segment === this.selectedSegment)?.num_art || '0';
+
+
+      // Construire la chaîne avec les champs et leurs num_art ou "0"
+      const searchParameters = [
+        `VCA:${this.searchTerm || ''}`,    // Référence VCA
+        `SEG:${selectedSegmentNumArt}`,
+        `PIL:${selectedLevelNumArt}`,      // Pilier (num_art ou "0")
+        `COL:${selectedUserNumArt}`,       // Collection (num_art ou "0")
+        `FCT:${selectedFunctionNumArt}`    // Fonction (num_art ou "0")
+      ].join(';'); // Concaténer avec ';' comme séparateur
+
+      console.log('Paramètres de recherche :', searchParameters);
+
+      // Appel au backend
+      this.backendService.getObjectByRef(searchParameters, this.serv).subscribe({
+        next: (response) => {
+          console.log('Réponse du backend :', response);
+
+          const documents = response.data
+            ?.flatMap((item: any) => item.documents) || [];
+          this.noResults = documents.length === 0;
+
+          if (!this.noResults) {
+            this.result = {
+              ref_utilisat: documents.map((doc: any) => ({
+                ref_utilisat: doc.ref_utilisat,
+                designation: doc.designation,
+                urlPicture: doc.urlPicture,
+                url: doc.url,
+              })),
+            };
+          } else {
+            this.result = null; // Réinitialiser les résultats si aucun document
+          }
+
+          console.log('Résultat formaté :', this.result);
+        },
+        error: (err) => {
+          console.error('Erreur lors de la recherche :', err);
+          //alert('Une erreur est survenue lors de la recherche.');
+        },
+      });
+    }
 
 
 
@@ -150,22 +158,55 @@ export class RechercheRefComponent {
     });
   }
 
-
-
-
-  onLevelChange(): void {
-    console.log('Niveau sélectionné : ', this.selectedLevel);
-
-    if (this.selectedLevel) {
-      this.filteredUsers = this.users.filter(user =>
-        user.niveau === this.selectedLevel
-      );
-      this.selectedUser = '0';
-    } else {
-      this.filteredUsers = [];
-      this.selectedUser = '0';
-    }
+  loadSegments(): void {
+    this.backendService.getSegment().subscribe({
+      next: (response) => {
+        console.log('Segments reçus :', response);
+        this.segments = response.data?.map((segment: {segment: string; num_art: string }) => ({
+          ...segment,
+          segment: segment.segment,
+          num_art: segment.num_art,
+        })) || [];
+      },
+      error: (err) => console.error('Erreur lors du chargement des Segments :', err),
+    });
   }
 
 
-}
+    onSegmentChange(): void {
+      console.log('Segment sélectionné : ', this.selectedSegment);
+
+      if (this.selectedSegment) {
+        // Filtrer les piliers selon le segment
+        this.filteredLevels = this.levels.filter(level => level.segment === this.selectedSegment);
+        this.selectedLevel = ''; // Réinitialiser le Pilier à la valeur par défaut
+        this.filteredUsers = []; // Réinitialiser les collections
+        this.selectedUser = ''; // Réinitialiser la Collection
+      } else {
+        // Si le segment est désélectionné, réinitialiser tous les champs dépendants
+        this.filteredLevels = [];
+        this.selectedLevel = ''; // Réinitialiser le Pilier
+        this.filteredUsers = [];
+        this.selectedUser = ''; // Réinitialiser la Collection
+      }
+    }
+
+
+    onLevelChange(): void {
+      console.log('Niveau sélectionné : ', this.selectedLevel);
+
+      if (this.selectedLevel) {
+        // Filtrer les collections selon le Pilier sélectionné
+        this.filteredUsers = this.users.filter(user => user.niveau.toLowerCase() === this.selectedLevel.toLowerCase());
+        this.selectedUser = ''; // Réinitialiser la Collection
+      } else {
+        // Si le Pilier est désélectionné, réinitialiser les collections
+        this.filteredUsers = [];
+        this.selectedUser = ''; // Réinitialiser la Collection
+      }
+    }
+
+
+
+
+  }
