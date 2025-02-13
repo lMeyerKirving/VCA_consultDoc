@@ -10,7 +10,7 @@
 
     <!-- Titre centré -->
     <h1 class="text-3xl font-serif text-gray-700 text-center flex-grow tracking-widest uppercase">
-      Fiche Point de Contrôle
+      {{ pageTitle }}
     </h1>
 
     <!-- Espace vide pour équilibrer -->
@@ -146,7 +146,7 @@
               <!-- Image -->
               <div class="h-48 w-full bg-white">
                 <img
-                  [src]="ref.urlPicture || 'placeholder.png'"
+                  [src]="ref.urlPicture || 'no_picture.png'"
                   alt="{{ ref.designation }}"
                   class="h-full w-full object-contain">
 <!--                <img src="bague.png" alt="Logo Van Cleef & Arpels" class="h-full w-full object-contain">-->

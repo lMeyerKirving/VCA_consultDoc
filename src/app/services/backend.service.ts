@@ -114,4 +114,11 @@ export class BackendService {
     return this.http.get<any>(url, { responseType: 'json' });
   }
 
+  getName(data: string): Observable<any> {
+    const param = "getName";
+    const url = `${this.audrosServer}${this._baseUrl}${param}@${data}@`;
+    console.log("URL générée pour getObjectByRef : ", url);
+    return this.http.get<any>(url, { responseType: 'json' });
+  }
+
 }

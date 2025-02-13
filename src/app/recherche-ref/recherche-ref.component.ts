@@ -39,6 +39,10 @@
     selectedUser: string = ''; // Utilisateur sélectionné
     selectedSegment: string = '';
 
+    pageTitle: string = '';
+    type: string | null = null; // Type de l'application
+
+
     ngOnInit(): void {
       const currentUrl = window.location.href;
       const urlObject = new URL(currentUrl);
@@ -48,6 +52,7 @@
       this.backendService.audrosServer = this.baseURL;
       this.route.queryParamMap.subscribe((params) => {
         this.sessionID = params.get('AUSessionID');
+        this.type = params.get('type');
         console.log('SessionID :', this.sessionID);
 
         if (this.sessionID) {
@@ -62,6 +67,7 @@
       this.loadUsers();
       this.loadFunctions();
       this.loadSegments();
+      this.loadPageTitle();
     }
 
     onSearch(): void {
@@ -78,7 +84,8 @@
         `SEG:${selectedSegmentNumArt}`,
         `PIL:${selectedLevelNumArt}`,      // Pilier (num_art ou "0")
         `COL:${selectedUserNumArt}`,       // Collection (num_art ou "0")
-        `FCT:${selectedFunctionNumArt}`    // Fonction (num_art ou "0")
+        `FCT:${selectedFunctionNumArt}`,   // Fonction (num_art ou "0")
+        `TYPE:${this.type || ''}`          // Ajout du type à la requête
       ].join(';'); // Concaténer avec ';' comme séparateur
 
       console.log('Paramètres de recherche :', searchParameters);
@@ -108,8 +115,14 @@
           console.log('Résultat formaté :', this.result);
         },
         error: (err) => {
-          console.error('Erreur lors de la recherche :', err);
-          //alert('Une erreur est survenue lors de la recherche.');
+          if (err.status === 200) {
+            // ==> le backend est complètement indisponible ou unreachable (il envoie une requette http au lieu d'un json) //TODO : tester les limite de cette methode
+            // C’est ici que tu affiches un popup "Serveur indisponible" par exemple
+            alert('Serveur indisponible');
+          } else {
+            // Autre type d’erreur (4xx, 5xx, problème de parsing, etc.)
+            console.error('Erreur applicative ou autre :', err);
+          }
         },
       });
     }
@@ -171,6 +184,25 @@
       error: (err) => console.error('Erreur lors du chargement des Segments :', err),
     });
   }
+
+    loadPageTitle(): void {
+      if (this.type) { // Vérifie que "type" est défini avant d'appeler le backend
+        console.log('Type dans l\'url : ', this.type)
+        this.backendService.getName(this.type).subscribe({
+          next: (response) => {
+            const data = response.data?.[0];
+            this.pageTitle = data?.titre || ''; // Utilisez le titre reçu ou une valeur par défaut
+          },
+          error: (err) => {
+            console.error('Erreur lors du chargement du titre :', err);
+            this.pageTitle = 'Something went wrong'; // En cas d'erreur, utilisez la valeur par défaut
+          },
+        });
+      } else {
+        console.error('Type non défini dans l’URL');
+        this.pageTitle = 'Type not provided'; // Gestion en cas de type manquant
+      }
+    }
 
 
     onSegmentChange(): void {
