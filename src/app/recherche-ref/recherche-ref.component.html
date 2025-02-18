@@ -168,16 +168,36 @@
           </div>
         </div>
 
-        <!-- Affichage du message "Aucun document trouvé" seulement si la recherche est terminée -->
+        <!-- Gestion du premier affichage (message d'accueil) et du message "Aucun résultat" -->
         <ng-template #noResultsState>
           <div *ngIf="!isLoading" class="mt-10 text-center">
-            <p class="text-gray-600 text-lg">Aucun document correspondant n'a été trouvé.</p>
-            <p class="text-gray-500 text-sm">Essayez avec une autre référence ou contactez le support si le problème persiste.</p>
+            <div *ngIf="!hasSearched; else noResultsMessage">
+              <img src="search.png" alt="Recherche" class="h-16 w-16 mx-auto mb-4">
+              <p class="text-gray-600 text-lg font-medium">Bienvenue dans l'outil de recherche.</p>
+              <p class="text-gray-500 text-sm">Renseignez une référence et utilisez les filtres pour trouver vos documents.</p>
+            </div>
+            <ng-template #noResultsMessage>
+              <p class="text-gray-600 text-lg">Aucun document correspondant n'a été trouvé.</p>
+              <p class="text-gray-500 text-sm">Essayez avec une autre référence ou contactez le support si le problème persiste.</p>
+            </ng-template>
           </div>
         </ng-template>
       </div>
 
 
     </div>
+
+    <!-- Popup de déconnexion -->
+    <div *ngIf="isDisconnected" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+      <div class="bg-white p-6 rounded-lg shadow-lg text-center">
+        <h2 class="text-xl font-semibold text-gray-800 mb-4">Session expirée</h2>
+        <p class="text-gray-600 mb-6">Vous avez été déconnecté. Veuillez vous reconnecter.</p>
+        <button (click)="redirectToLogin()" class="bg-[#ADCB90] text-white py-2 px-4 rounded-md hover:bg-[#8CA774] transition">
+          Reconnexion
+        </button>
+      </div>
+    </div>
+
+
   </main>
 </div>

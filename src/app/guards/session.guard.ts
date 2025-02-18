@@ -10,8 +10,9 @@ export class SessionGuard implements CanActivate {
   canActivate(): boolean {
     const sessionID = this.getSessionIDFromUrl();
 
+
     if (!sessionID) {
-      window.location.href = 'https://dms-server/apps/aud-portal-app/'; //TODO : redirection dynamique (dms-server)
+      window.location.href = window.location.origin + '/apps/aud-portal-app/';
       return false;
     }
 

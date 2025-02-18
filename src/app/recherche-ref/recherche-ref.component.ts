@@ -46,6 +46,10 @@
     type: string | null = null; // Type de l'application
 
     isLoading: boolean = false;
+    isDisconnected: boolean = false;
+    hasSearched: boolean = false;
+
+
 
     ngOnInit(): void {
       const currentUrl = window.location.href;
@@ -76,6 +80,7 @@
 
     onSearch(): void {
       this.isLoading = true;
+      this.hasSearched = true; // L'utilisateur a lancé une recherche
       // Récupérer les num_art pour chaque champ sélectionné ou définir "0" par défaut
       const selectedLevelNumArt = this.levels.find(level => level.ref_utilisat === this.selectedLevel)?.num_art || '0';
       const selectedUserNumArt = this.users.find(user => user.ref_utilisat === this.selectedUser)?.num_art || '0';
@@ -123,7 +128,8 @@
           if (err.status === 200) {
             // ==> le backend est complètement indisponible ou unreachable (il envoie une requette http au lieu d'un json) //TODO : tester les limite de cette methode
             // C’est ici que tu affiches un popup "Serveur indisponible" par exemple
-            alert('Serveur indisponible');
+            //alert('Serveur indisponible');
+            this.isDisconnected = true;
           } else {
             // Autre type d’erreur (4xx, 5xx, problème de parsing, etc.)
             console.error('Erreur applicative ou autre :', err);
@@ -252,7 +258,9 @@
       }
     }
 
-
+    redirectToLogin(): void {
+      window.location.href = `${this.serv}/apps/aud-portal-app/`;
+    }
 
 
   }
