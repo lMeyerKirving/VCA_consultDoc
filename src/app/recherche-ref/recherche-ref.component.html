@@ -1,3 +1,4 @@
+
 <div class="bg-[#F8F5F0] min-h-screen flex flex-col">
   <!-- Bandeau supérieur -->
 
@@ -58,7 +59,7 @@
               <option value="">-- Sélectionnez un segment --</option>
               <option *ngFor="let segment of segments" [value]="segment.segment">{{ segment.segment }}</option>
             </select>
-            <small *ngIf="!selectedSegment" class="text-gray-500 text-sm mt-1">Choisissez un segment pour activer les piliers.</small>
+<!--            <small *ngIf="!selectedSegment" class="text-gray-500 text-sm mt-1">Choisissez un segment pour activer les piliers.</small>-->
           </div>
 
           <!-- Pilier -->
@@ -78,7 +79,7 @@
               <option value="">-- Sélectionnez un pilier --</option>
               <option *ngFor="let level of filteredLevels" [value]="level.ref_utilisat">{{ level.ref_utilisat }}</option>
             </select>
-            <small *ngIf="!selectedSegment" class="text-gray-500 text-sm mt-1">Vous devez d'abord sélectionner un segment.</small>
+            <small *ngIf="!selectedSegment" class="text-gray-500 text-sm mt-1">Sélectionnez d'abord un Segment</small>
           </div>
 
           <!-- Collection -->
@@ -97,7 +98,7 @@
               <option value="">-- Sélectionnez une collection --</option>
               <option *ngFor="let user of filteredUsers" [value]="user.ref_utilisat">{{ user.ref_utilisat }}</option>
             </select>
-            <small *ngIf="!selectedLevel" class="text-gray-500 text-sm mt-1">Sélectionnez un pilier pour activer les collections.</small>
+            <small *ngIf="!selectedLevel" class="text-gray-500 text-sm mt-1">Sélectionnez d'abord un Pilier</small>
 
           </div>
 
@@ -134,24 +135,29 @@
       </div>
 
       <!-- Bloc de droite -->
+      <!-- Bloc de droite -->
       <div class="w-full lg:w-[80%] bg-white rounded-lg shadow-md p-8">
-        <h2 class="text-lg font-semibold text-gray-700 mb-6 uppercase" *ngIf="result?.ref_utilisat">
+        <h2 class="text-lg font-semibold text-gray-700 mb-6 uppercase" *ngIf="!isLoading && result?.ref_utilisat">
           Résultats de la recherche
         </h2>
-        <div *ngIf="result?.ref_utilisat; else noResultsState">
+
+        <!-- Indicateur de chargement -->
+        <div *ngIf="isLoading" class="flex flex-col justify-center items-center h-48 space-y-3">
+          <img src="loading-vca.gif" alt="Chargement..." class="h-20 w-20">
+          <p class="text-gray-600 text-lg font-medium">Chargement...</p>
+        </div>
+
+        <!-- Affichage des résultats uniquement si la recherche est terminée -->
+        <div *ngIf="!isLoading && result?.ref_utilisat; else noResultsState">
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             <!-- Parcourir les résultats -->
             <div *ngFor="let ref of result.ref_utilisat"
                  class="bg-white border border-black rounded-xl shadow-md flex flex-col overflow-hidden">
               <!-- Image -->
               <div class="h-48 w-full bg-white">
-                <img
-                  [src]="ref.urlPicture || 'no_picture.png'"
-                  alt="{{ ref.designation }}"
-                  class="h-full w-full object-contain">
-<!--                <img src="bague.png" alt="Logo Van Cleef & Arpels" class="h-full w-full object-contain">-->
+                <img [src]="ref.urlPicture || 'no_picture.png'" alt="{{ ref.designation }}" class="h-full w-full object-contain">
               </div>
-              <!-- Lien cliquable dans un encadré -->
+              <!-- Lien cliquable -->
               <div class="flex-grow flex flex-col justify-center bg-white p-4">
                 <a href="{{ ref.url }}" target="_blank"
                    class="block text-gray-800 text-center py-2 px-4 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-100">
@@ -161,17 +167,16 @@
             </div>
           </div>
         </div>
+
+        <!-- Affichage du message "Aucun document trouvé" seulement si la recherche est terminée -->
         <ng-template #noResultsState>
-          <div class="mt-10 text-center">
-            <p class="text-gray-600 text-lg">
-              Aucun document correspondant n'a été trouvé.
-            </p>
-            <p class="text-gray-500 text-sm">
-              Essayez avec une autre référence ou contactez le support si le problème persiste.
-            </p>
+          <div *ngIf="!isLoading" class="mt-10 text-center">
+            <p class="text-gray-600 text-lg">Aucun document correspondant n'a été trouvé.</p>
+            <p class="text-gray-500 text-sm">Essayez avec une autre référence ou contactez le support si le problème persiste.</p>
           </div>
         </ng-template>
       </div>
+
 
     </div>
   </main>

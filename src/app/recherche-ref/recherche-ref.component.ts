@@ -3,6 +3,8 @@
   import { FormsModule } from '@angular/forms';
   import {NgClass, NgForOf, NgIf} from '@angular/common';
   import { ActivatedRoute, Router } from '@angular/router';
+  import { Title } from '@angular/platform-browser';
+
 
   @Component({
     selector: 'app-recherche-ref',
@@ -17,6 +19,7 @@
     ]
   })
   export class RechercheRefComponent {
+
     searchTerm: string = ''; // Contient la référence utilisateur saisie
     result: any = null; // Résultat obtenu après recherche
     noResults: boolean = false; // Indique si aucun résultat n'a été trouvé
@@ -26,7 +29,7 @@
 
     selectedFunction: string = '';
 
-    constructor(private backendService: BackendService, private route: ActivatedRoute, private router: Router) {}
+    constructor(private backendService: BackendService, private route: ActivatedRoute, private router: Router,  private titleService: Title) {}
 
     levels: any[] = []; // Liste des Levels
     users: any[] = []; // Liste des Users
@@ -42,6 +45,7 @@
     pageTitle: string = '';
     type: string | null = null; // Type de l'application
 
+    isLoading: boolean = false;
 
     ngOnInit(): void {
       const currentUrl = window.location.href;
@@ -62,15 +66,16 @@
           });
         }
       });
-
+      this.loadPageTitle();
       this.loadLevels();
       this.loadUsers();
       this.loadFunctions();
       this.loadSegments();
-      this.loadPageTitle();
+
     }
 
     onSearch(): void {
+      this.isLoading = true;
       // Récupérer les num_art pour chaque champ sélectionné ou définir "0" par défaut
       const selectedLevelNumArt = this.levels.find(level => level.ref_utilisat === this.selectedLevel)?.num_art || '0';
       const selectedUserNumArt = this.users.find(user => user.ref_utilisat === this.selectedUser)?.num_art || '0';
@@ -124,6 +129,9 @@
             console.error('Erreur applicative ou autre :', err);
           }
         },
+        complete: () => {
+          this.isLoading = false; // Fin du chargement
+        }
       });
     }
 
@@ -191,18 +199,24 @@
         this.backendService.getName(this.type).subscribe({
           next: (response) => {
             const data = response.data?.[0];
-            this.pageTitle = data?.titre || ''; // Utilisez le titre reçu ou une valeur par défaut
+            this.pageTitle = data?.titre || ''; // Utilisation du titre reçu
+
+            // Met à jour le titre de l'onglet du navigateur
+            this.titleService.setTitle(this.pageTitle || 'Van Cleef & Arpels - Recherche');
           },
           error: (err) => {
             console.error('Erreur lors du chargement du titre :', err);
-            this.pageTitle = 'Something went wrong'; // En cas d'erreur, utilisez la valeur par défaut
+            this.pageTitle = 'Something went wrong'; // Valeur par défaut en cas d'erreur
+            this.titleService.setTitle(this.pageTitle); // Met à jour le titre avec la valeur par défaut
           },
         });
       } else {
         console.error('Type non défini dans l’URL');
-        this.pageTitle = 'Type not provided'; // Gestion en cas de type manquant
+        this.pageTitle = 'Titre not provided'; // Valeur par défaut si aucun type n'est défini
+        this.titleService.setTitle(this.pageTitle);
       }
     }
+
 
 
     onSegmentChange(): void {
