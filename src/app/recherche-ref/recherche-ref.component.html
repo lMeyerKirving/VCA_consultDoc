@@ -135,15 +135,15 @@
       </div>
 
       <!-- Bloc de droite -->
-      <!-- Bloc de droite -->
       <div class="w-full lg:w-[80%] bg-white rounded-lg shadow-md p-8">
         <h2 class="text-lg font-semibold text-gray-700 mb-6 uppercase" *ngIf="!isLoading && result?.ref_utilisat">
-          Résultats de la recherche
+          Résultats de la recherche <span class="text-sm text-gray-500 ml-2" *ngIf="resultCount > 0">({{ resultCount }} résultats)</span>
         </h2>
+
 
         <!-- Indicateur de chargement -->
         <div *ngIf="isLoading" class="flex flex-col justify-center items-center h-48 space-y-3">
-          <img src="loading-vca.gif" alt="Chargement..." class="h-20 w-20">
+          <img src="loading-vca2.gif" alt="Chargement..." class="h-20 w-20">
           <p class="text-gray-600 text-lg font-medium">Chargement...</p>
         </div>
 

@@ -49,6 +49,9 @@
     isDisconnected: boolean = false;
     hasSearched: boolean = false;
 
+    resultCount: number = 0;
+
+
 
 
     ngOnInit(): void {
@@ -121,7 +124,7 @@
           } else {
             this.result = null; // Réinitialiser les résultats si aucun document
           }
-
+          this.resultCount = this.result?.ref_utilisat?.length || 0;
           console.log('Résultat formaté :', this.result);
         },
         error: (err) => {
@@ -261,6 +264,19 @@
     redirectToLogin(): void {
       window.location.href = `${this.serv}/apps/aud-portal-app/`;
     }
+
+    resetFields(): void {
+      this.searchTerm = '';
+      this.selectedSegment = '';
+      this.selectedLevel = '';
+      this.selectedUser = '';
+      this.selectedFunction = '';
+      this.result = null;
+      this.resultCount = 0;
+      this.noResults = false;
+      this.hasSearched = false;
+    }
+
 
 
   }
