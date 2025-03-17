@@ -215,7 +215,7 @@
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             <!-- Parcourir les résultats -->
             <div *ngFor="let ref of result.ref_utilisat"
-                 class="bg-white border border-gray-300 rounded-xl shadow-md flex flex-col overflow-hidden">
+                 class="bg-white border border-gray-300 rounded-xl flex flex-col overflow-hidden">
             <!-- Image -->
               <div class="h-48 w-full bg-white">
                 <img [src]="ref.urlPicture || 'no_picture.png'" alt="{{ ref.designation }}" class="h-full w-full object-contain">
