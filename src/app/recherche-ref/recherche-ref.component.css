@@ -21,12 +21,49 @@ input:disabled, select:disabled {
   cursor: not-allowed; /* Curseur interdit */
 }
 
-/* Style spécifique pour le champ Référence VCA (input avec id="reference") */
-#reference {
-  border-color: #d1bfa7; /* Couleur beige clair par défaut */
+/* S'assurer que le header est bien positionné */
+header {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.5rem 2rem;
 }
 
-#reference:focus {
-  border-color: #d1bfa7; /* Couleur beige clair au focus */
-  box-shadow: 0 0 0 3px rgba(209, 191, 167, 0.4); /* Ombre beige claire */
+/* Centrage parfait du titre */
+header h1 {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
 }
+
+/* Champ de recherche dans le header */
+#reference {
+  border-color: #d1bfa7; /* Couleur beige clair */
+  padding: 0.5rem 1rem;
+  border-radius: 0.375rem;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+/* Focus sur le champ de recherche */
+#reference:focus {
+  border-color: #d1bfa7;
+  box-shadow: 0 0 0 3px rgba(209, 191, 167, 0.4);
+}
+
+/* Bouton recherche */
+button {
+  transition: background-color 0.3s;
+}
+
+/* Effet hover sur le bouton */
+button:hover {
+  background-color: #b7a890;
+}
+
+/* Bouton à gauche : garde le vert mais avec un léger effet au survol */
+#test:hover {
+  background-color: #ADCB90 !important; /* Toujours vert */
+  filter: brightness(1.1); /* Effet léger d'éclaircissement */
+}
+

@@ -2,7 +2,7 @@
 <div class="bg-[#F8F5F0] min-h-screen flex flex-col">
   <!-- Bandeau supérieur -->
 
-  <header class="bg-white border-b border-gray-200 py-6 shadow-sm flex items-center justify-between px-8">
+  <header class="bg-white border-b border-gray-200 py-6 shadow-sm flex items-center justify-between px-8 relative">
 
     <!-- Logo à gauche -->
     <div class="flex items-center">
@@ -10,13 +10,41 @@
     </div>
 
     <!-- Titre centré -->
-    <h1 class="text-3xl font-serif text-gray-700 text-center flex-grow tracking-widest uppercase">
+    <h1 class="text-3xl font-serif text-gray-700 text-center flex-grow tracking-widest uppercase absolute left-1/2 transform -translate-x-1/2">
       {{ pageTitle }}
     </h1>
 
-    <!-- Espace vide pour équilibrer -->
-    <div class="w-16"></div>
+    <!-- Recherche VCA à droite -->
+    <div class="flex flex-col items-center space-y-1">
+      <!-- Ligne avec l'input et le bouton -->
+      <div class="flex items-center space-x-2">
+        <input
+          id="reference"
+          type="text"
+          [(ngModel)]="searchTerm"
+          name="reference"
+          placeholder="Référence VCA"
+          class="border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring focus:ring-[#d1bfa7] text-gray-800"
+        />
+        <button
+          (click)="onSearch()"
+          class="bg-[#d1bfa7] text-white px-4 py-2 rounded-md hover:bg-[#b7a890] transition"
+        >
+          Rechercher
+        </button>
+      </div>
+
+      <!-- Petit texte en dessous, bien centré sous l’ensemble -->
+      <small class="text-gray-500 text-sm w-full text-center">
+        Veuillez entrer une référence VCA
+      </small>
+    </div>
+
+
+
+
   </header>
+
 
 
   <!-- Contenu principal -->
@@ -25,10 +53,22 @@
       <!-- Bloc de gauche -->
       <div class="w-full lg:w-[20%] bg-white rounded-lg shadow-md p-8">
         <div class="flex justify-between items-center mb-4">
-          <h2 class="text-lg font-semibold text-gray-700 uppercase">Produit recherché</h2>
+          <h2 class="text-lg font-semibold text-gray-700 uppercase">Filtres</h2>
           <button (click)="resetFields()" class="text-gray-500 hover:text-gray-700 transition">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h5M20 20v-5h-5M4 20h5v-5m10-10h-5V4"/>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-5 w-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M20 11a8.001 8.001 0 00-15.874-1M4 4v5h5
+         M20 13a8.001 8.001 0 01-15.874 1M20 20v-5h-5"
+              />
             </svg>
           </button>
         </div>
@@ -37,16 +77,31 @@
         <!-- Formulaire de recherche -->
         <form (submit)="onSearch(); $event.preventDefault()" class="space-y-6">
           <!-- Référence VCA -->
+<!--          <div>-->
+<!--            <label for="reference" class="block text-sm font-medium text-gray-600 mb-2">-->
+<!--              Référence VCA-->
+<!--            </label>-->
+<!--            <input-->
+<!--              id="reference"-->
+<!--              type="text"-->
+<!--              [(ngModel)]="searchTerm"-->
+<!--              name="reference"-->
+<!--              placeholder="Entrez une référence"-->
+<!--              class="w-full border border-gray-300 rounded-md p-3 focus:outline-none focus:ring focus:ring-[#d1bfa7] text-gray-800"-->
+<!--            />-->
+<!--          </div>-->
+
+          <!-- Désignation du PF -->
           <div>
-            <label for="reference" class="block text-sm font-medium text-gray-600 mb-2">
-              Référence VCA
+            <label for="designation" class="block text-sm font-medium text-gray-600 mb-2">
+              Désignation du PF
             </label>
             <input
-              id="reference"
+              id="designation"
               type="text"
-              [(ngModel)]="searchTerm"
-              name="reference"
-              placeholder="Entrez une référence"
+              [(ngModel)]="designationPF"
+              name="designation"
+              placeholder="Ex: Vintage Bag"
               class="w-full border border-gray-300 rounded-md p-3 focus:outline-none focus:ring focus:ring-[#d1bfa7] text-gray-800"
             />
           </div>
@@ -127,8 +182,9 @@
 
           <!-- Bouton Rechercher -->
           <button
+            id="test"
             type="submit"
-            class="w-full bg-[#ADCB90] text-white py-3 rounded-lg hover:bg-[#ADCB90] transition-all text-lg font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+            class="w-full bg-[#ADCB90] text-white py-3 rounded-lg transition-all text-lg font-semibold disabled:opacity-50 disabled:cursor-not-allowed hover:brightness-110"
           >
             Rechercher
           </button>
@@ -144,7 +200,7 @@
       <!-- Bloc de droite -->
       <div class="w-full lg:w-[80%] bg-white rounded-lg shadow-md p-8">
         <h2 class="text-lg font-semibold text-gray-700 mb-6 uppercase" *ngIf="!isLoading && result?.ref_utilisat">
-          Résultats de la recherche <span class="text-sm text-gray-500 ml-2" *ngIf="resultCount > 0">({{ resultCount }} résultats)</span>
+          Résultats de la recherche <span class="text-sm text-gray-500 ml-2" *ngIf="resultCount > 0">({{ resultCount }})</span>
         </h2>
 
 
@@ -159,8 +215,8 @@
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             <!-- Parcourir les résultats -->
             <div *ngFor="let ref of result.ref_utilisat"
-                 class="bg-white border border-black rounded-xl shadow-md flex flex-col overflow-hidden">
-              <!-- Image -->
+                 class="bg-white border border-gray-300 rounded-xl shadow-md flex flex-col overflow-hidden">
+            <!-- Image -->
               <div class="h-48 w-full bg-white">
                 <img [src]="ref.urlPicture || 'no_picture.png'" alt="{{ ref.designation }}" class="h-full w-full object-contain">
               </div>

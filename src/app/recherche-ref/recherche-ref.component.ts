@@ -50,7 +50,7 @@
     hasSearched: boolean = false;
 
     resultCount: number = 0;
-
+    designationPF: string = ''; // Nouveau champ pour la désignation du PF
 
 
 
@@ -93,13 +93,15 @@
 
       // Construire la chaîne avec les champs et leurs num_art ou "0"
       const searchParameters = [
-        `VCA:${this.searchTerm || ''}`,    // Référence VCA
+        `VCA:${this.searchTerm || ''}`,      // Référence VCA
+        `DES:${this.designationPF || ''}`,   // Désignation PF (nouveau paramètre)
         `SEG:${selectedSegmentNumArt}`,
-        `PIL:${selectedLevelNumArt}`,      // Pilier (num_art ou "0")
-        `COL:${selectedUserNumArt}`,       // Collection (num_art ou "0")
-        `FCT:${selectedFunctionNumArt}`,   // Fonction (num_art ou "0")
-        `TYPE:${this.type || ''}`          // Ajout du type à la requête
+        `PIL:${selectedLevelNumArt}`,
+        `COL:${selectedUserNumArt}`,
+        `FCT:${selectedFunctionNumArt}`,
+        `TYPE:${this.type || ''}`
       ].join(';'); // Concaténer avec ';' comme séparateur
+
 
       console.log('Paramètres de recherche :', searchParameters);
 
