@@ -67,3 +67,21 @@ button:hover {
   filter: brightness(1.1); /* Effet léger d'éclaircissement */
 }
 
+.btn-reset {
+  background: transparent;
+  border: none;
+  outline: none;
+  transition: color 0.3s, background-color 0.3s;
+}
+
+.btn-reset:hover {
+  color: #4a5568; /* gris légèrement plus foncé */
+  background: none; /* empêche l’ajout d’un fond */
+}
+
+.btn-reset:focus {
+  outline: none; /* Supprime le contour au focus */
+  box-shadow: none; /* Évite tout effet de halo */
+}
+
+
