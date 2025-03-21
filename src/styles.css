@@ -10,6 +10,7 @@
 /* Style global */
 body {
   font-family: 'Open Sans', Arial, sans-serif;
+  font-variant-numeric: lining-nums;
   background-color: #f8f5f0; /* Fond général */
   color: #333333; /* Couleur de texte par défaut */
   margin: 0;
@@ -17,6 +18,7 @@ body {
 
 h1, h2, h3 {
   font-family: 'Playfair Display', serif; /* Titres élégants */
+  font-variant-numeric: lining-nums;
 }
 
 button {
